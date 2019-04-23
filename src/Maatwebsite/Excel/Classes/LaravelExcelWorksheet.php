@@ -490,12 +490,12 @@ class LaravelExcelWorksheet extends PHPExcel_Worksheet {
      */
     public function createSheetFromArray($source = null, $nullValue = null, $startCell = 'A1', $strictNullComparison = false)
     {
-        if (!is_array($source))
-            throw new PHPExcel_Exception("Parameter \$source should be an array.");
+        if (!is_iterable($source)) {
+            throw new PHPExcel_Exception('Parameter $source should be an iterable.');
+        }
 
         //    Convert a 1-D array to 2-D (for ease of looping)
-        if (!is_array(end($source)))
-        {
+        if (is_array($source) && !is_array(end($source))) {
             $source = [$source];
         }
 
@@ -549,16 +549,16 @@ class LaravelExcelWorksheet extends PHPExcel_Worksheet {
     protected function _addVars($key, $value = false, $nullValue = null, $startCell = 'A1', $strictNullComparison = false)
     {
         // Add array of data
-        if (is_array($key) || $key instanceof Collection)
+        if (is_iterable($key))
         {
-            // Set the data
-            $this->data = $this->addData($key);
-
             // Create excel from array without a view
             if (!$this->parser)
             {
                 return $this->createSheetFromArray($this->data, $nullValue, $startCell, $strictNullComparison);
             }
+
+            // Set the data
+            $this->data = $this->addData($key);
         }
 
         // Add seperate values
